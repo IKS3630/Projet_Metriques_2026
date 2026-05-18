@@ -21,7 +21,15 @@
   </head>
   <body>
     <div class="container">
-      <h1>Atelier — Indicateur de chaleur (Tokyo, Japon)</h1>
+      <h1>Atelier — Indicateur de chaleur</h1>
+      <form id="cityForm" method="get" style="margin:12px 0">
+        <label for="city" style="font-size:14px;color:#475569;margin-right:8px">Choisir une ville :</label>
+        <select id="city" name="city" onchange="document.getElementById('cityForm').submit()" style="padding:8px 10px;border-radius:8px;border:1px solid #eee">
+          {% for c in cities %}
+            <option value="{{ c }}" {% if c==selected_city %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </form>
       <p class="small">Source : <a href="https://open-meteo.com/en/docs" target="_blank">Open-Meteo API</a> — affichage sous forme de Polar Area Chart.</p>
 
       <div class="panel">
@@ -32,7 +40,7 @@
         <div class="meta-card">
           <div>
             <div style="font-size:13px;color:#6b7280">Indicateur</div>
-            <div class="indicator">Température moyenne</div>
+            <div class="indicator">Température moyenne — <span style="font-weight:600">{{ selected_city }}</span></div>
             <div style="font-size:20px;color:#0b1220">{{ avg_temp if avg_temp is not none else 'N/A' }} °C</div>
           </div>
           <div>
@@ -54,37 +62,28 @@
       const labels = {{ labels|tojson }};
       const temps = {{ temps|tojson }};
 
-      // Colors for segments
-      const colors = temps.map((t,i)=>{
-        const v = temps[i] || 0;
-        const r = Math.min(255, 150 + Math.round((v-5)*6));
-        const g = Math.max(80, 200 - Math.round((v-5)*4));
-        const b = Math.max(120, 200 - Math.round((v-5)*3));
-        return `rgba(${r},${g},${b},0.85)`;
-      });
-
+      // Radar chart (autre format que Polar Area / Lines / Histogram)
       const ctx = document.getElementById('atelierChart').getContext('2d');
       new Chart(ctx, {
-        type: 'polarArea',
+        type: 'radar',
         data: {
           labels: labels,
           datasets: [{
             label: 'Température max (°C)',
             data: temps,
-            backgroundColor: colors,
-            borderColor: '#fff',
-            borderWidth: 2
+            backgroundColor: 'rgba(255,107,107,0.18)',
+            borderColor: 'rgba(255,99,132,0.85)',
+            pointBackgroundColor: 'rgba(255,99,132,1)',
+            pointRadius: 5,
+            borderWidth: 2,
           }]
         },
         options: {
+          elements: {line: {tension: 0.3}},
           scales: {
-            r: {
-              suggestedMin: 0
-            }
+            r: { beginAtZero: true }
           },
-          plugins: {
-            legend: {position: 'right'}
-          }
+          plugins: { legend: { position: 'top' } }
         }
       });
     </script>

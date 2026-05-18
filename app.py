@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
@@ -53,12 +53,29 @@ def mon_histogramme():
 
 @app.route("/atelier")
 def mon_atelier():
-    # Choix : Tokyo, Japon (latitude/longitude)
-    latitude = 35.6895
-    longitude = 139.6917
+    # Liste de villes proposées (majoritairement en Asie)
+    # Conserver Tokyo et Beijing (Asie) et ajouter 2 villes par continent
+    cities = {
+        # Asie
+        'Tokyo': (35.6895, 139.6917),
+        'Beijing': (39.9042, 116.4074),
+        # Europe
+        'Paris': (48.8566, 2.3522),
+        'Rome': (41.9028, 12.4964),
+        # Amérique du Sud
+        'Sao Paulo': (-23.5505, -46.6333),
+        'Buenos Aires': (-34.6037, -58.3816),
+        # Afrique
+        'Nairobi': (-1.2921, 36.8219),
+        'Johannesburg': (-26.2041, 28.0473),
+    }
+
+    selected = request.args.get('city', 'Tokyo')
+    latitude, longitude = cities.get(selected, cities['Tokyo'])
+
     url = (
         f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}"
-        "&daily=temperature_2m_max&timezone=Asia/Tokyo&forecast_days=7"
+        "&daily=temperature_2m_max&forecast_days=7&timezone=auto"
     )
     response = requests.get(url)
     data = response.json()
@@ -78,7 +95,15 @@ def mon_atelier():
             avg_temp = None
             heat_score = None
 
-    return render_template("atelier.html", labels=labels, temps=temps, avg_temp=avg_temp, heat_score=heat_score)
+    return render_template(
+        "atelier.html",
+        labels=labels,
+        temps=temps,
+        avg_temp=avg_temp,
+        heat_score=heat_score,
+        cities=list(cities.keys()),
+        selected_city=selected,
+    )
 
 
 # Ne rien mettre après ce commentaire
