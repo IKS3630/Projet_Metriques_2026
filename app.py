@@ -36,6 +36,21 @@ def mongraphique():
     return render_template("graphiques.html")
 
 
+@app.route("/histogramme")
+def mon_histogramme():
+    url = (
+        "https://api.open-meteo.com/v1/forecast?latitude=48.8566&longitude=2.3522"
+        "&daily=temperature_2m_max&timezone=Europe/Paris&forecast_days=7"
+    )
+    response = requests.get(url)
+    data = response.json()
+
+    labels = data.get("daily", {}).get("time", [])
+    temps = data.get("daily", {}).get("temperature_2m_max", [])
+
+    return render_template("histogramme.html", labels=labels, temps=temps)
+
+
 # Ne rien mettre après ce commentaire
     
 if __name__ == "__main__":
