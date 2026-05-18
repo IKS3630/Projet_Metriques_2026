@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Contact — Projet Métriques</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root{
+        --bg:#fff8fb;--card:#ffffff;--accent:#ff6b6b;--accent-2:#ffd166;--muted:#6b7280;--soft:#f6f6ff;--glass:rgba(255,255,255,0.6)
+      }
+      *{box-sizing:border-box;font-family:Poppins,Inter,Segoe UI,Roboto,Arial,sans-serif}
+      body{margin:0;min-height:100vh;background:linear-gradient(135deg,#fef3f3 0%,#fff8fb 60%);color:#0f1724;display:flex;align-items:center;justify-content:center;padding:48px}
+      .wrap{width:100%;max-width:1100px}
+      .card{background:linear-gradient(180deg,#ffffff,#fffdf8);border-radius:18px;padding:28px;box-shadow:0 20px 50px rgba(17,24,39,0.08);display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+      header{grid-column:1/-1;display:flex;gap:16px;align-items:center}
+      .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#ffd166,#ff6b6b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px}
+      h1{margin:0;font-size:22px}
+      p.lead{margin:4px 0 0;color:var(--muted)}
+
+      form{display:flex;flex-direction:column;gap:14px}
+      .row{display:flex;gap:12px}
+      .field{position:relative}
+      .input{width:100%;padding:14px 14px;border-radius:12px;border:1px solid #f0e9e9;background:#fff;outline:none;font-size:14px}
+      .input:focus{box-shadow:0 8px 30px rgba(255,107,107,0.12);border-color:var(--accent)}
+      label.floated{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#9aa1ab;transition:all .18s ease;font-size:14px}
+      .input:not(:placeholder-shown)+label.floated,
+      .input:focus+label.floated{top:8px;left:12px;font-size:12px;color:var(--accent)}
+      textarea.input{min-height:140px;resize:vertical}
+
+      .btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(90deg,#ff6b6b,#ffd166);border:none;padding:12px 16px;border-radius:12px;color:#102a43;font-weight:700;cursor:pointer;box-shadow:0 8px 30px rgba(255,107,107,0.12)}
+      .btn:active{transform:translateY(1px)}
+
+      .aside{padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff7f7,#fffef9);border:1px solid rgba(255,215,150,0.35)}
+      .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+      .tips{font-size:14px;color:#334155}
+      .thanks{display:none;margin-top:12px;padding:12px;border-radius:10px;background:#f0fff4;color:#065f46;border:1px solid #bbf7d0}
+
+      footer{grid-column:1/-1;text-align:right;color:var(--muted);font-size:13px;margin-top:8px}
+
+      /* responsive */
+      @media (max-width:980px){.card{grid-template-columns:1fr;}}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <header>
+          <div class="logo">PM</div>
+          <div>
+            <h1>Contactez-nous — Projet Métriques</h1>
+            <p class="lead">Un retour ? Une idée ? Racontez-nous en quelques lignes.</p>
+          </div>
+        </header>
+
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="row">
+            <div class="field" style="flex:1">
+              <input class="input" id="prenom" name="prenom" placeholder=" " required />
+              <label class="floated" for="prenom">Prénom</label>
+            </div>
+            <div class="field" style="flex:1">
+              <input class="input" id="nom" name="nom" placeholder=" " required />
+              <label class="floated" for="nom">Nom</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <textarea class="input" id="message" name="message" placeholder=" " required></textarea>
+            <label class="floated" for="message">Votre message</label>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px">
+            <button class="btn" type="submit">Envoyer le message</button>
+            <div class="thanks" id="thanksBox">Merci — votre message est prêt (pas d'enregistrement).</div>
+          </div>
+        </form>
+
+        <aside class="aside">
+          <div class="meta">Pourquoi écrire ?</div>
+          <div class="tips">Nous apprécions les retours — même concis. Ce formulaire est une maquette : les données ne sont pas conservées.</div>
+          <ul style="margin-top:12px;color:#334155">
+            <li>Clair, court, utile.</li>
+            <li>Indiquez votre préférence de contact.</li>
+            <li>Attendez une réponse si nécessaire.</li>
+          </ul>
+        </aside>
+
+        <footer>Projet Métriques — © 2026</footer>
+      </div>
+    </div>
+
+    <script>
+      function handleSubmit(e){
+        e.preventDefault();
+        const prenom = document.getElementById('prenom').value.trim();
+        const nom = document.getElementById('nom').value.trim();
+        const message = document.getElementById('message').value.trim();
+        const thanks = document.getElementById('thanksBox');
+        if(!prenom || !nom || !message) return;
+        thanks.textContent = `✨ Merci ${prenom} — votre message est prêt (pas d'enregistrement).`;
+        thanks.style.display = 'block';
+        setTimeout(()=>{thanks.style.display='none';document.getElementById('contactForm').reset();},3000);
+      }
+    </script>
+  </body>
+</html>
