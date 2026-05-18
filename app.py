@@ -51,6 +51,36 @@ def mon_histogramme():
     return render_template("histogramme.html", labels=labels, temps=temps)
 
 
+@app.route("/atelier")
+def mon_atelier():
+    # Choix : Tokyo, Japon (latitude/longitude)
+    latitude = 35.6895
+    longitude = 139.6917
+    url = (
+        f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}"
+        "&daily=temperature_2m_max&timezone=Asia/Tokyo&forecast_days=7"
+    )
+    response = requests.get(url)
+    data = response.json()
+
+    labels = data.get("daily", {}).get("time", [])
+    temps = data.get("daily", {}).get("temperature_2m_max", [])
+
+    # Calculer un indicateur simple : température moyenne et score de chaleur (0-100)
+    avg_temp = None
+    heat_score = None
+    if temps:
+        try:
+            avg_temp = round(sum(temps) / len(temps), 1)
+            # Normaliser :  -10°C -> 0 ; 40°C -> 100
+            heat_score = int(max(0, min(100, (avg_temp + 10) / 50 * 100)))
+        except Exception:
+            avg_temp = None
+            heat_score = None
+
+    return render_template("atelier.html", labels=labels, temps=temps, avg_temp=avg_temp, heat_score=heat_score)
+
+
 # Ne rien mettre après ce commentaire
     
 if __name__ == "__main__":
